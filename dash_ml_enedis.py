@@ -35,6 +35,7 @@ model.fit(X_train_scaled, y_train)
 
 # Create the Dash application
 app = dash.Dash(__name__)
+server = app.server 
 
 # External CSS stylesheets
 external_stylesheets = ['assets/style.css']
