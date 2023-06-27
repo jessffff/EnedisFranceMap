@@ -79,7 +79,6 @@ app.layout = html.Div(
             tooltip={"placement": "bottom", "always_visible": True}
         ),
         html.Br(),
-        html.Br(),
         html.Div([
             html.P("Statut du jour de la semaine"),
             dcc.Dropdown(
@@ -107,7 +106,6 @@ app.layout = html.Div(
             ),
         ], className='dropdown-container2'),
 
-        html.Br(),
         html.Br(),
         html.Br(),
         html.Div([
@@ -144,7 +142,6 @@ app.layout = html.Div(
                 className='dropdown'
             ),
         ], className='dropdown-container2'),
-        html.Br(),
         html.Br(),
         html.P("Région"),
         dcc.Dropdown(
