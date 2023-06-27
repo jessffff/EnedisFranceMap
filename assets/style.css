@@ -1,1 +1,88 @@
+/* style.css */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
+.prediction-button {
+  width: 150px; 
+  height: 32px;
+  font-size: 20px;
+  text-shadow: 5;
+}
+
+.dropdown-container1 {
+  display: inline-block;
+  margin-right: 100px;
+}
+
+.dropdown-container2 {
+  display: inline-block;
+  margin-left: 100px;
+}
+
+.dropdown {
+  width: 300px;
+  text-align: left; 
+  color: black;
+  margin: 0 auto;
+}
+
+.dropdown select option {
+
+  padding-left: 100px;
+}
+
+
+Div {
+ text-align: center;
+ color: black;
+
+}
+
+/* Slider container */
+.slider-container {
+  margin-bottom: 20px;
+}
+
+/* Slider label */
+.slider-label {
+  margin-bottom: 10px;
+}
+
+/* Slider input */
+.slider-input {
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+/* Slider tooltip */
+.tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip.show {
+  visibility: visible;
+  opacity: 0.8;
+}
+
+
+P {
+    text-align : center;
+    color: black;
+    margin: 0 auto;
+    }
