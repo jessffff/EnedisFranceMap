@@ -51,11 +51,9 @@ app.layout = html.Div(
         ),
         html.Br(),
         html.Br(),
-        html.Br(),
         html.H1("Analyse et prédiction de la consommation",
                 className='title'),
         html.P("Toutes les variables sont à compléter"),
-        html.Br(),
         html.Br(),
         html.Br(),
         html.P("Choisissez une température (°C): "),
@@ -111,8 +109,6 @@ app.layout = html.Div(
 
         html.Br(),
         html.Br(),
-        html.Br(),
-
         html.Br(),
         html.Div([
             html.P("Mois"),
