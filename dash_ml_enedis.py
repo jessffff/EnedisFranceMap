@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 
 # Load the CSV data
 df_final_20_22 = pd.read_csv("df_final_20_22.csv")
-#df_final = pd.read_csv('df_final.csv')
+
 
 # Define X and y variables
 y = df_final_20_22["Consommation_moyenne"]
