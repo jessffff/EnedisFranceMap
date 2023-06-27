@@ -258,7 +258,8 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
                        html.Br(),
                        f"Sélection:  {noms_mois[int(date)-1]}   température :  {temperature}°C    pluie: {rainfall}mm",
                        html.Br(),
-                       f"Sachant qu'en moyenne il a fait {temp_moy: .1f}°C, qu'il a plu {pluie_moy: .0f} mm par jour, et que la consommation électrique moyenne était alors de {conso_moy/1000: .2f} kWh,",
+                       f"Sur le mois {noms_mois[int(date)-1]} il fait en moyenne {temp_moy: .1f}°C et il tombe {pluie_moy: .0f} mm/jour"
+                       f"la consommation électrique moyenne est alors de {conso_moy/1000: .2f} kWh",
                        html.Br(),
                        html.Strong(f"cela représente une {variation} de {100*(predicted_consumption[0]-conso_moy)/conso_moy: .2f}%.")])
 # =============================================================================
