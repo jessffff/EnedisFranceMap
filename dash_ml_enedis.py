@@ -80,7 +80,7 @@ def render_content(tab):
         return html.Div([
             html.Iframe(
                 src="https://docs.google.com/presentation/d/e/2PACX-1vQsi9y2cjNVBKLE1QMejRiTPrBWPngvogn3IKggLFvFcitMTW9X68XcQHQ3r7zTTUsf-7dirlwv-d1q/embed?start=false&loop=false&delayms=3000",
-                style={"width": "100%",  "height": "700px", "border": "none", "margin": "0 auto"})
+                style={"width": "100%",  "height": "500px", "border": "none", "margin": "0 auto"})
         ]),
     elif tab == 'tab-2':
         return html.Div([
