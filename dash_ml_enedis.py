@@ -41,9 +41,8 @@ external_stylesheets = ['style.css']
 app.layout = html.Div(
     className='container',
     children=[
-        html.Br(),
-        html.Img(
-            src="/assets/logo_enedis.png",
+            html.Img(
+            src="assets/logo_enedis.PNG",
             className='logo'
         ),
         html.Br(),
