@@ -33,6 +33,7 @@ model = RandomForestRegressor(max_depth=None, max_features=1.0,
 model.fit(X_train_scaled, y_train)
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
+server = app.server 
 
 external_stylesheets = ['style.css']
 
