@@ -10,13 +10,14 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 
-df_final_20_22 = pd.read_csv("df_final_20_22.csv")
+# Load the CSV data
+df_final_20_22 = pd.read_csv("df_final_France_20_22.csv")
 
 
-# Define X and y variables
-y = df_final_20_22["Consommation_moyenne"]
+y = df_final_20_22["Moyenne_consommation"]
 X = df_final_20_22.select_dtypes(include='number').drop(
-    ["Consommation_moyenne", "Nb points soutirage", "Total énergie soutirée (Wh)"], axis=1)
+    ["Moyenne_consommation", "Nb points soutirage", "Total énergie soutirée (Wh)"], axis=1)
+
 
 # Split the data into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(
@@ -33,7 +34,7 @@ model = RandomForestRegressor(max_depth=None, max_features=1.0,
 model.fit(X_train_scaled, y_train)
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
-server = app.server 
+server = app.server
 
 external_stylesheets = ['style.css']
 
@@ -41,7 +42,7 @@ external_stylesheets = ['style.css']
 app.layout = html.Div(
     className='container',
     children=[
-            html.Img(
+        html.Img(
             src="assets/logo_enedis.PNG",
             className='logo'
         ),
@@ -136,7 +137,6 @@ def render_content(tab):
                     options=[
                         {'label': "Sans objet", 'value': 'Aucune'},
                         {'label': 'Vacances', 'value': 'Vacances'},
-                        {'label': 'Confinement', 'value': 'Confinement'},
                     ],
                     value='',
                     className='dropdown'
@@ -188,9 +188,23 @@ def render_content(tab):
             dcc.Dropdown(
                 id='region-dropdown',
                 options=[
+                    {'label': 'Auvergne-Rhône-Alpes',
+                        'value': 'Auvergne-Rhône-Alpes'},
+                    {'label': 'Bourgogne-Franche-Comté',
+                        'value': 'Bourgogne-Franche-Comté'},
+                    {'label': 'Bretagne', 'value': 'Bretagne'},
                     {'label': 'Centre Val de Loire',
                         'value': 'Centre-Val de Loire'},
-                    {'label': 'Hauts de France', 'value': 'Hauts-de-France'}
+                    {'label': 'Grand Est', 'value': 'Grand-Est'},
+                    {'label': 'Hauts de France', 'value': 'Hauts-de-France'},
+                    {'label': 'Île-de-France', 'value': 'Île-de-France'},
+                    {'label': 'Normandie', 'value': 'Normandie'},
+                    {'label': 'Nouvelle-Aquitaine', 'value': 'Nouvelle Aquitaine'},
+                    {'label': 'Occitanie', 'value': 'Occitanie'},
+                    {'label': 'Pays de la Loire', 'value': 'Pays de la Loire'},
+                    {'label': "Provence-Alpes-Côte d'Azur",
+                        'value': "Provence-Alpes-Côte d'Azur"},
+
                 ],
                 value='',
                 className='dropdown'
@@ -225,8 +239,9 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
                      'juin', 'septembre', 'octrobre', 'novembre', 'décembre']
         input_data = pd.DataFrame(columns=X_train.columns)
 
-        input_data.loc[0, 'Moyenne_temperature'] = temperature
-        input_data.loc[0, 'PRECIP_TOTAL_DAY_MM'] = rainfall
+        input_data.loc[0, 'Température (°C)'] = temperature
+        input_data.loc[0,
+                       'Précipitations dans les 3 dernières heures'] = rainfall
         input_data['Statut_férié'] = 0
         input_data['Statut_ouvré'] = 0
         input_data['Statut_week-end'] = 0
@@ -248,35 +263,64 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
 
         input_data['Région_Centre-Val de Loire'] = 0
         input_data['Région_Hauts-de-France'] = 0
+        input_data['Région_Auvergne-Rhône-Alpes'] = 0
+        input_data['Région_Bourgogne-Franche-Comté'] = 0
+        input_data['Région_Bretagne'] = 0
+        input_data['Région_Grand-Est'] = 0
+        input_data['Région_Île-de-France'] = 0
+        input_data['Région_Normandie'] = 0
+        input_data['Région_Nouvelle Aquitaine'] = 0
+        input_data['Région_Occitanie'] = 0
+        input_data['Région_Pays de la Loire'] = 0
+        input_data["Région_Provence-Alpes-Côte d'Azur"] = 0
 
         if region == 'Centre-Val de Loire':
             input_data['Région_Centre-Val de Loire'] = 1
         elif region == 'Hauts-de-France':
             input_data['Région_Hauts-de-France'] = 1
+        elif region == 'Auvergne-Rhône-Alpes':
+            input_data['Région_Auvergne-Rhône-Alpes'] = 1
+        elif region == 'Bourgogne-Franche-Comté':
+            input_data['Région_Bourgogne-Franche-Comté'] = 1
+        elif region == 'Bretagne':
+            input_data['Région_Bretagne'] = 1
+        elif region == 'Grand-Est':
+            input_data['Région_Grand-Est'] = 1
+        elif region == 'Île-de-France':
+            input_data['Région_Île-de-France'] = 1
+        elif region == 'Normandie':
+            input_data['Région_Normandie'] = 1
+        elif region == 'Nouvelle Aquitaine':
+            input_data['Région_Nouvelle Aquitaine'] = 1
+        elif region == 'Occitanie':
+            input_data['Région_Occitanie'] = 1
+        elif region == 'Pays de la Loire':
+            input_data['Région_Pays de la Loire'] = 1
+        elif region == "Provence-Alpes-Côte d'Azur":
+            input_data["Région_Provence-Alpes-Côte d'Azur"] = 1
 
         input_data['Mois'] = date
 
-        input_data['Description_y_Confinement'] = 0
-        input_data['Description_y_Vacances'] = 0
+        input_data['Vacances_Vacances'] = 0
 
         if description == 'Vacances':
-            input_data['Description_y_Vacances'] = 1
-        elif description == 'Confinement':
-            input_data['Description_y_Confinement'] = 1
+            input_data['Vacances_Vacances'] = 1
 
         input_data = input_data.fillna(X_train[(X_train['Mois'] == int(
             date)) & (X_train['Région_' + region] == 1)].mean())
 
-        temp_moy = X_train[(X_train['Mois'] == int(date)) & (
-            X_train['Région_' + region] == 1)]['Moyenne_temperature'].mean()
-        pluie_moy = X_train[(X_train['Mois'] == int(date)) & (
-            X_train['Région_' + region] == 1)]['PRECIP_TOTAL_DAY_MM'].mean()
+# =============================================================================
+#         temp_moy = X_train[(X_train['Mois'] == int(date)) & (
+#             X_train['Région_' + region] == 1)]['Moyenne_temperature'].mean()
+#         pluie_moy = X_train[(X_train['Mois'] == int(date)) & (
+#             X_train['Région_' + region] == 1)]['PRECIP_TOTAL_DAY_MM'].mean()
+# =============================================================================
         if profil_consommateur == 'Professionnel':
             conso_moy = df_final_20_22[(df_final_20_22['Mois'] == int(date)) & (df_final_20_22['Région_' + region] == 1) & (
-                df_final_20_22['Profil_consommateur_Professionnel'] == 1)]['Consommation_moyenne'].mean()
+                df_final_20_22['Profil_consommateur_Professionnel'] == 1)]['Moyenne_consommation'].mean()
         else:
             conso_moy = df_final_20_22[(df_final_20_22['Mois'] == int(date)) & (df_final_20_22['Région_' + region] == 1) & (
-                df_final_20_22['Profil_consommateur_Résident'] == 1)]['Consommation_moyenne'].mean()
+                df_final_20_22['Profil_consommateur_Résident'] == 1)]['Moyenne_consommation'].mean()
 
         input_data_scaled = scaler.transform(input_data)
 
@@ -295,10 +339,8 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
                        html.Br(),
                        html.Strong(f"cela représente une {variation} de {100*(predicted_consumption[0]-conso_moy)/conso_moy: .2f}%.")])
 
-
     return ""
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
