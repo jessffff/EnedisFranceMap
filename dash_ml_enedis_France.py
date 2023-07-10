@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 
-# Load the CSV data
+
 df_final_20_22 = pd.read_csv("df_final_France_20_22.csv")
 
 
@@ -19,16 +19,13 @@ X = df_final_20_22.select_dtypes(include='number').drop(
     ["Moyenne_consommation", "Nb points soutirage", "Total énergie soutirée (Wh)"], axis=1)
 
 
-# Split the data into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, shuffle=False)
 
-# Scale the features
 scaler = MinMaxScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# Train the model
 model = RandomForestRegressor(max_depth=None, max_features=1.0,
                               min_samples_leaf=1, min_samples_split=2, n_estimators=100)
 model.fit(X_train_scaled, y_train)
@@ -38,7 +35,7 @@ server = app.server
 
 external_stylesheets = ['style.css']
 
-# Define the application layout
+# layout
 app.layout = html.Div(
     className='container',
     children=[
@@ -309,12 +306,6 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
         input_data = input_data.fillna(X_train[(X_train['Mois'] == int(
             date)) & (X_train['Région_' + region] == 1)].mean())
 
-# =============================================================================
-#         temp_moy = X_train[(X_train['Mois'] == int(date)) & (
-#             X_train['Région_' + region] == 1)]['Moyenne_temperature'].mean()
-#         pluie_moy = X_train[(X_train['Mois'] == int(date)) & (
-#             X_train['Région_' + region] == 1)]['PRECIP_TOTAL_DAY_MM'].mean()
-# =============================================================================
         if profil_consommateur == 'Professionnel':
             conso_moy = df_final_20_22[(df_final_20_22['Mois'] == int(date)) & (df_final_20_22['Région_' + region] == 1) & (
                 df_final_20_22['Profil_consommateur_Professionnel'] == 1)]['Moyenne_consommation'].mean()
