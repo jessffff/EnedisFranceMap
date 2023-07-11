@@ -1,23 +1,27 @@
+
 import pandas as pd
 import dash
-
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
-
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+import json
+import plotly.graph_objects as go
+import plotly.express as px
 
+from urllib.request import urlopen
+import json
+with urlopen("https://raw.githubusercontent.com/jessffff/bdd/main/geojson_regions.json") as f:
+    data = json.load(f)
 
 
 df_final_20_22 = pd.read_csv("df_final_France_20_22.csv")
 
-
 y = df_final_20_22["Moyenne_consommation"]
 X = df_final_20_22.select_dtypes(include='number').drop(
     ["Moyenne_consommation", "Nb points soutirage", "Total énergie soutirée (Wh)"], axis=1)
-
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, shuffle=False)
@@ -35,7 +39,8 @@ server = app.server
 
 external_stylesheets = ['style.css']
 
-# layout
+# LAYOUT
+
 app.layout = html.Div(
     className='container',
     children=[
@@ -68,8 +73,8 @@ app.layout = html.Div(
     ]
 )
 
+# CALLBACKS
 
-# Callback function
 
 @app.callback(Output('tabs-content-classes', 'children'),
               Input('tabs-with-classes', 'value'))
@@ -181,38 +186,12 @@ def render_content(tab):
             ], className='dropdown-container2'),
             html.Br(),
             html.Br(),
-            html.P("Région"),
-            dcc.Dropdown(
-                id='region-dropdown',
-                options=[
-                    {'label': 'Auvergne-Rhône-Alpes',
-                        'value': 'Auvergne-Rhône-Alpes'},
-                    {'label': 'Bourgogne-Franche-Comté',
-                        'value': 'Bourgogne-Franche-Comté'},
-                    {'label': 'Bretagne', 'value': 'Bretagne'},
-                    {'label': 'Centre Val de Loire',
-                        'value': 'Centre-Val de Loire'},
-                    {'label': 'Grand Est', 'value': 'Grand-Est'},
-                    {'label': 'Hauts de France', 'value': 'Hauts-de-France'},
-                    {'label': 'Île-de-France', 'value': 'Île-de-France'},
-                    {'label': 'Normandie', 'value': 'Normandie'},
-                    {'label': 'Nouvelle-Aquitaine', 'value': 'Nouvelle Aquitaine'},
-                    {'label': 'Occitanie', 'value': 'Occitanie'},
-                    {'label': 'Pays de la Loire', 'value': 'Pays de la Loire'},
-                    {'label': "Provence-Alpes-Côte d'Azur",
-                        'value': "Provence-Alpes-Côte d'Azur"},
-
-                ],
-                value='',
-                className='dropdown'
-            ),
-            html.Br(),
-            html.Br(),
             html.Button('Prédire', id='predict-button',
                         n_clicks=0, className='prediction-button'),
             html.Br(),
-            html.H3("Consommation électrique prédite"),
-            html.Div(id='prediction-output')
+            html.H3("Consommation électrique prédite par région"),
+            html.Div(id='prediction-output'),
+
 
         ])
 
@@ -225,15 +204,13 @@ def render_content(tab):
     State("style-jour-dropdown", "value"),
     State("description-dropdown", "value"),
     State("date-input", "value"),
-    State("profil-consommateur-dropdown", "value"),
-    State("region-dropdown", "value")
+    State("profil-consommateur-dropdown", "value")
 )
-def update_prediction_output(n_clicks, temperature, rainfall, style_jour, description, date, profil_consommateur, region):
-    if n_clicks > 0 and date == '' or style_jour == '' or description == '' or profil_consommateur == '' or region == '':
+def update_prediction_output(n_clicks, temperature, rainfall, style_jour, description, date, profil_consommateur):
+    if n_clicks > 0 and date == '' or style_jour == '' or description == '' or profil_consommateur == '':
         return html.P('Veuillez remplir les champs nécessaires', style={'color': 'red', 'font-size': '20px'})
     if n_clicks > 0 and date != '':
-        noms_mois = ['janvier', 'février', 'mars', 'avril', 'mai',
-                     'juin', 'septembre', 'octrobre', 'novembre', 'décembre']
+
         input_data = pd.DataFrame(columns=X_train.columns)
 
         input_data.loc[0, 'Température (°C)'] = temperature
@@ -258,44 +235,6 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
         elif profil_consommateur == 'Résidentiel':
             input_data['Profil_consommateur_Résident'] = 1
 
-        input_data['Région_Centre-Val de Loire'] = 0
-        input_data['Région_Hauts-de-France'] = 0
-        input_data['Région_Auvergne-Rhône-Alpes'] = 0
-        input_data['Région_Bourgogne-Franche-Comté'] = 0
-        input_data['Région_Bretagne'] = 0
-        input_data['Région_Grand-Est'] = 0
-        input_data['Région_Île-de-France'] = 0
-        input_data['Région_Normandie'] = 0
-        input_data['Région_Nouvelle Aquitaine'] = 0
-        input_data['Région_Occitanie'] = 0
-        input_data['Région_Pays de la Loire'] = 0
-        input_data["Région_Provence-Alpes-Côte d'Azur"] = 0
-
-        if region == 'Centre-Val de Loire':
-            input_data['Région_Centre-Val de Loire'] = 1
-        elif region == 'Hauts-de-France':
-            input_data['Région_Hauts-de-France'] = 1
-        elif region == 'Auvergne-Rhône-Alpes':
-            input_data['Région_Auvergne-Rhône-Alpes'] = 1
-        elif region == 'Bourgogne-Franche-Comté':
-            input_data['Région_Bourgogne-Franche-Comté'] = 1
-        elif region == 'Bretagne':
-            input_data['Région_Bretagne'] = 1
-        elif region == 'Grand-Est':
-            input_data['Région_Grand-Est'] = 1
-        elif region == 'Île-de-France':
-            input_data['Région_Île-de-France'] = 1
-        elif region == 'Normandie':
-            input_data['Région_Normandie'] = 1
-        elif region == 'Nouvelle Aquitaine':
-            input_data['Région_Nouvelle Aquitaine'] = 1
-        elif region == 'Occitanie':
-            input_data['Région_Occitanie'] = 1
-        elif region == 'Pays de la Loire':
-            input_data['Région_Pays de la Loire'] = 1
-        elif region == "Provence-Alpes-Côte d'Azur":
-            input_data["Région_Provence-Alpes-Côte d'Azur"] = 1
-
         input_data['Mois'] = date
 
         input_data['Vacances_Vacances'] = 0
@@ -304,31 +243,64 @@ def update_prediction_output(n_clicks, temperature, rainfall, style_jour, descri
             input_data['Vacances_Vacances'] = 1
 
         input_data = input_data.fillna(X_train[(X_train['Mois'] == int(
-            date)) & (X_train['Région_' + region] == 1)].mean())
-
-        if profil_consommateur == 'Professionnel':
-            conso_moy = df_final_20_22[(df_final_20_22['Mois'] == int(date)) & (df_final_20_22['Région_' + region] == 1) & (
-                df_final_20_22['Profil_consommateur_Professionnel'] == 1)]['Moyenne_consommation'].mean()
-        else:
-            conso_moy = df_final_20_22[(df_final_20_22['Mois'] == int(date)) & (df_final_20_22['Région_' + region] == 1) & (
-                df_final_20_22['Profil_consommateur_Résident'] == 1)]['Moyenne_consommation'].mean()
+            date))].mean())
 
         input_data_scaled = scaler.transform(input_data)
 
-        predicted_consumption = model.predict(input_data_scaled)
+        regions = ['Auvergne-Rhône-Alpes', 'Bourgogne-Franche-Comté', 'Bretagne', 'Centre-Val de Loire',
+                   'Grand-Est', 'Hauts-de-France', 'Île-de-France', 'Normandie', 'Nouvelle Aquitaine',
+                   'Occitanie', 'Pays de la Loire', "Provence-Alpes-Côte d'Azur"]
 
-        if predicted_consumption[0] > conso_moy:
-            variation = 'hausse'
-        else:
-            variation = 'baisse'
+        predictions = []
+        for region in regions:
+            input_data_region = input_data_scaled.copy()
+            input_data_region[0, X_train.columns.str.startswith('Région_')] = 0
+            input_data_region[0, X_train.columns == f"Région_{region}"] = 1
+            predicted_consumption = model.predict(input_data_region)
+            predictions.append(predicted_consumption[0] / 1000)
+        df_predictions = pd.DataFrame(
+            {'Région': regions, 'Prédict. conso (kWh)': predictions})
+        df_predictions["Prédict. conso (kWh)"] = df_predictions["Prédict. conso (kWh)"].round(
+            3)
 
-        return html.P([html.Strong(f"{predicted_consumption[0]/1000:.2f} kWh."),
-                       html.Br(),
-                       f"Sélection:  {noms_mois[int(date)-1]}   température :  {temperature}°C    pluie: {rainfall}mm",
-                       html.Br(),
-                       f"La consommation électrique moyenne pour le mois de {noms_mois[int(date)-1]}  est de {conso_moy/1000: .2f} kWh,",
-                       html.Br(),
-                       html.Strong(f"cela représente une {variation} de {100*(predicted_consumption[0]-conso_moy)/conso_moy: .2f}%.")])
+        fig = px.choropleth_mapbox(df_predictions,
+                                   geojson=data,
+                                   locations='Région',
+                                   color="Prédict. conso (kWh)",
+                                   color_continuous_scale="haline_r",
+                                   labels={"Prédict. conso (kWh)": 'kWh'},
+                                   featureidkey='properties.nom',
+                                   mapbox_style="carto-positron",
+                                   zoom=4, center={"lat": 46.2276, "lon": 2.2137},
+                                   opacity=0.5,
+                                   )
+        fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+
+        return html.Div(
+            style={'display': 'flex', 'flex-direction': 'row'},
+            children=[
+                html.Div(
+                    style={'width': '40%'},
+                    children=[
+                        html.Table([
+                            html.Thead(html.Tr([html.Th(col)
+                                       for col in df_predictions.columns])),
+                            html.Tbody([
+                                html.Tr([html.Td(df_predictions.iloc[i][col])
+                                        for col in df_predictions.columns])
+                                for i in range(len(df_predictions))
+                            ])
+                        ])
+                    ]
+                ),
+                html.Div(
+                    style={'width': '60%'},
+                    children=[
+                        dcc.Graph(figure=fig)
+                    ]
+                )
+            ]
+        )
 
     return ""
 
