@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 from urllib.request import urlopen
-import json
+
 with urlopen("https://raw.githubusercontent.com/jessffff/bdd/main/geojson_regions.json") as f:
     data = json.load(f)
 
