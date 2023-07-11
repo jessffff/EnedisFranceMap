@@ -3,6 +3,6 @@ requests
 gunicorn
 pandas
 dash
-json
+
 plotly.graph_objects
 plotly.express
