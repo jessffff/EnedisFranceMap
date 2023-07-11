@@ -3,9 +3,5 @@ requests
 gunicorn
 pandas
 dash
-plotly==5.3.1
+plotly
 
-plotly.graph_objects
-plotly.express
-/opt/render/project/src/.venv/bin/python -m pip install --upgrade pip
-/opt/render/project/src/.venv/bin/python -m pip install -r requirements.txt
